@@ -3,20 +3,31 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Budget Manager API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: income
+    description: Income operations
+  - name: expenses
+    description: Expense operations
+  - name: budgets
+    description: Budget planning operations
+  - name: categories
+    description: Category operations
+  - name: savings-goals
+    description: Savings goals operations
+  - name: dashboard
+    description: Dashboard summary operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +35,476 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: createCategory
+      tags: [categories]
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCategoryBody"
+      responses:
+        "201":
+          description: Created category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+
+  /categories/{id}:
+    delete:
+      operationId: deleteCategory
+      tags: [categories]
+      summary: Delete a category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /income:
+    get:
+      operationId: listIncome
+      tags: [income]
+      summary: List income entries
+      parameters:
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Format: YYYY-MM"
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of income entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IncomeEntry"
+    post:
+      operationId: createIncome
+      tags: [income]
+      summary: Create income entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncomeBody"
+      responses:
+        "201":
+          description: Created income entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncomeEntry"
+
+  /income/{id}:
+    put:
+      operationId: updateIncome
+      tags: [income]
+      summary: Update income entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIncomeBody"
+      responses:
+        "200":
+          description: Updated income entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncomeEntry"
+    delete:
+      operationId: deleteIncome
+      tags: [income]
+      summary: Delete income entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /expenses:
+    get:
+      operationId: listExpenses
+      tags: [expenses]
+      summary: List expense entries
+      parameters:
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Format: YYYY-MM"
+        - name: categoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of expense entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExpenseEntry"
+    post:
+      operationId: createExpense
+      tags: [expenses]
+      summary: Create expense entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExpenseBody"
+      responses:
+        "201":
+          description: Created expense entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseEntry"
+
+  /expenses/{id}:
+    put:
+      operationId: updateExpense
+      tags: [expenses]
+      summary: Update expense entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExpenseBody"
+      responses:
+        "200":
+          description: Updated expense entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseEntry"
+    delete:
+      operationId: deleteExpense
+      tags: [expenses]
+      summary: Delete expense entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /budgets:
+    get:
+      operationId: listBudgets
+      tags: [budgets]
+      summary: List budget plans
+      parameters:
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Format: YYYY-MM"
+      responses:
+        "200":
+          description: List of budget plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BudgetPlan"
+    post:
+      operationId: createBudget
+      tags: [budgets]
+      summary: Create or update budget for a category/month
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBudgetBody"
+      responses:
+        "201":
+          description: Created budget plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BudgetPlan"
+
+  /budgets/{id}:
+    put:
+      operationId: updateBudget
+      tags: [budgets]
+      summary: Update budget plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBudgetBody"
+      responses:
+        "200":
+          description: Updated budget plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BudgetPlan"
+    delete:
+      operationId: deleteBudget
+      tags: [budgets]
+      summary: Delete budget plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /savings-goals:
+    get:
+      operationId: listSavingsGoals
+      tags: [savings-goals]
+      summary: List savings goals
+      responses:
+        "200":
+          description: List of savings goals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SavingsGoal"
+    post:
+      operationId: createSavingsGoal
+      tags: [savings-goals]
+      summary: Create a savings goal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSavingsGoalBody"
+      responses:
+        "201":
+          description: Created savings goal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavingsGoal"
+
+  /savings-goals/{id}:
+    put:
+      operationId: updateSavingsGoal
+      tags: [savings-goals]
+      summary: Update savings goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSavingsGoalBody"
+      responses:
+        "200":
+          description: Updated savings goal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavingsGoal"
+    delete:
+      operationId: deleteSavingsGoal
+      tags: [savings-goals]
+      summary: Delete savings goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /savings-goals/{id}/contribution:
+    post:
+      operationId: addSavingsContribution
+      tags: [savings-goals]
+      summary: Add a contribution to a savings goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddContributionBody"
+      responses:
+        "200":
+          description: Updated savings goal after contribution
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavingsGoal"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get monthly dashboard summary
+      parameters:
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Format: YYYY-MM. Defaults to current month."
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/category-breakdown:
+    get:
+      operationId: getCategoryBreakdown
+      tags: [dashboard]
+      summary: Get expense breakdown by category for a month
+      parameters:
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Format: YYYY-MM. Defaults to current month."
+      responses:
+        "200":
+          description: Category breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryBreakdown"
+
+  /dashboard/monthly-trend:
+    get:
+      operationId: getMonthlyTrend
+      tags: [dashboard]
+      summary: Get income vs expense trend for the last N months
+      parameters:
+        - name: months
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 6
+      responses:
+        "200":
+          description: Monthly trend data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthlyTrendPoint"
+
+  /dashboard/budget-vs-actual:
+    get:
+      operationId: getBudgetVsActual
+      tags: [dashboard]
+      summary: Get budget vs actual spending by category for a month
+      parameters:
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "Format: YYYY-MM. Defaults to current month."
+      responses:
+        "200":
+          description: Budget vs actual comparison
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BudgetVsActual"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +515,365 @@ components:
       required:
         - status
 
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        type:
+          type: string
+          enum: [income, expense, both]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - icon
+        - color
+        - type
+        - createdAt
+
+    CreateCategoryBody:
+      type: object
+      properties:
+        name:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        type:
+          type: string
+          enum: [income, expense, both]
+      required:
+        - name
+        - icon
+        - color
+        - type
+
+    IncomeEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        source:
+          type: string
+        amount:
+          type: number
+        date:
+          type: string
+          format: date
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - source
+        - amount
+        - date
+        - categoryId
+        - categoryName
+        - createdAt
+
+    CreateIncomeBody:
+      type: object
+      properties:
+        source:
+          type: string
+        amount:
+          type: number
+        date:
+          type: string
+          format: date
+        categoryId:
+          type: integer
+        notes:
+          type: string
+      required:
+        - source
+        - amount
+        - date
+        - categoryId
+
+    ExpenseEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        amount:
+          type: number
+        date:
+          type: string
+          format: date
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        categoryIcon:
+          type: string
+        categoryColor:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - description
+        - amount
+        - date
+        - categoryId
+        - categoryName
+        - categoryIcon
+        - categoryColor
+        - createdAt
+
+    CreateExpenseBody:
+      type: object
+      properties:
+        description:
+          type: string
+        amount:
+          type: number
+        date:
+          type: string
+          format: date
+        categoryId:
+          type: integer
+        notes:
+          type: string
+      required:
+        - description
+        - amount
+        - date
+        - categoryId
+
+    BudgetPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        categoryIcon:
+          type: string
+        categoryColor:
+          type: string
+        month:
+          type: string
+          description: "Format: YYYY-MM"
+        budgetAmount:
+          type: number
+        spentAmount:
+          type: number
+        remainingAmount:
+          type: number
+        percentUsed:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - categoryId
+        - categoryName
+        - categoryIcon
+        - categoryColor
+        - month
+        - budgetAmount
+        - spentAmount
+        - remainingAmount
+        - percentUsed
+        - createdAt
+
+    CreateBudgetBody:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+        month:
+          type: string
+          description: "Format: YYYY-MM"
+        budgetAmount:
+          type: number
+      required:
+        - categoryId
+        - month
+        - budgetAmount
+
+    SavingsGoal:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        targetAmount:
+          type: number
+        currentAmount:
+          type: number
+        deadline:
+          type: string
+          format: date
+        notes:
+          type: string
+        percentComplete:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - targetAmount
+        - currentAmount
+        - percentComplete
+        - createdAt
+
+    CreateSavingsGoalBody:
+      type: object
+      properties:
+        name:
+          type: string
+        targetAmount:
+          type: number
+        currentAmount:
+          type: number
+        deadline:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - name
+        - targetAmount
+        - currentAmount
+
+    AddContributionBody:
+      type: object
+      properties:
+        amount:
+          type: number
+        notes:
+          type: string
+      required:
+        - amount
+
+    DashboardSummary:
+      type: object
+      properties:
+        month:
+          type: string
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        netSavings:
+          type: number
+        savingsRate:
+          type: number
+        budgetUtilization:
+          type: number
+        topExpenseCategory:
+          type: string
+        transactionCount:
+          type: integer
+      required:
+        - month
+        - totalIncome
+        - totalExpenses
+        - netSavings
+        - savingsRate
+        - budgetUtilization
+        - transactionCount
+
+    CategoryBreakdown:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        categoryIcon:
+          type: string
+        categoryColor:
+          type: string
+        amount:
+          type: number
+        percentage:
+          type: number
+        transactionCount:
+          type: integer
+      required:
+        - categoryId
+        - categoryName
+        - categoryIcon
+        - categoryColor
+        - amount
+        - percentage
+        - transactionCount
+
+    MonthlyTrendPoint:
+      type: object
+      properties:
+        month:
+          type: string
+          description: "Format: YYYY-MM"
+        income:
+          type: number
+        expenses:
+          type: number
+        savings:
+          type: number
+      required:
+        - month
+        - income
+        - expenses
+        - savings
+
+    BudgetVsActual:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        categoryIcon:
+          type: string
+        categoryColor:
+          type: string
+        budgeted:
+          type: number
+        actual:
+          type: number
+        variance:
+          type: number
+        percentUsed:
+          type: number
+      required:
+        - categoryId
+        - categoryName
+        - categoryIcon
+        - categoryColor
+        - budgeted
+        - actual
+        - variance
+        - percentUsed
