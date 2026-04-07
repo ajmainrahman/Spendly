@@ -21,7 +21,7 @@ router.get("/expenses", async (req, res): Promise<void> => {
   }
   const { month, categoryId } = queryParams.data;
 
-  const conditions = [];
+  const conditions = [eq(expensesTable.userId, req.userId!)];
   if (month) {
     conditions.push(sql`to_char(${expensesTable.date}::date, 'YYYY-MM') = ${month}`);
   }
@@ -29,7 +29,7 @@ router.get("/expenses", async (req, res): Promise<void> => {
     conditions.push(eq(expensesTable.categoryId, categoryId));
   }
 
-  const baseQuery = db
+  const rows = await db
     .select({
       id: expensesTable.id,
       description: expensesTable.description,
@@ -43,11 +43,9 @@ router.get("/expenses", async (req, res): Promise<void> => {
       createdAt: expensesTable.createdAt,
     })
     .from(expensesTable)
-    .leftJoin(categoriesTable, eq(expensesTable.categoryId, categoriesTable.id));
-
-  const rows = conditions.length > 0
-    ? await baseQuery.where(and(...conditions)).orderBy(expensesTable.date)
-    : await baseQuery.orderBy(expensesTable.date);
+    .leftJoin(categoriesTable, eq(expensesTable.categoryId, categoriesTable.id))
+    .where(and(...conditions))
+    .orderBy(expensesTable.date);
 
   const mapped = rows.map(r => ({
     ...r,
@@ -55,6 +53,7 @@ router.get("/expenses", async (req, res): Promise<void> => {
     categoryName: r.categoryName ?? "Unknown",
     categoryIcon: r.categoryIcon ?? "circle",
     categoryColor: r.categoryColor ?? "#6366f1",
+    notes: r.notes ?? undefined,
   }));
 
   res.json(ListExpensesResponse.parse(mapped));
@@ -66,7 +65,10 @@ router.post("/expenses", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [entry] = await db.insert(expensesTable).values({ ...parsed.data, amount: String(parsed.data.amount) }).returning();
+  const [entry] = await db
+    .insert(expensesTable)
+    .values({ ...parsed.data, userId: req.userId, amount: String(parsed.data.amount) })
+    .returning();
   const category = await db.select().from(categoriesTable).where(eq(categoriesTable.id, entry.categoryId)).limit(1);
   res.status(201).json({
     ...entry,
@@ -74,6 +76,7 @@ router.post("/expenses", async (req, res): Promise<void> => {
     categoryName: category[0]?.name ?? "Unknown",
     categoryIcon: category[0]?.icon ?? "circle",
     categoryColor: category[0]?.color ?? "#6366f1",
+    notes: entry.notes ?? undefined,
   });
 });
 
@@ -88,7 +91,11 @@ router.put("/expenses/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [entry] = await db.update(expensesTable).set({ ...parsed.data, amount: String(parsed.data.amount) }).where(eq(expensesTable.id, params.data.id)).returning();
+  const [entry] = await db
+    .update(expensesTable)
+    .set({ ...parsed.data, amount: String(parsed.data.amount) })
+    .where(and(eq(expensesTable.id, params.data.id), eq(expensesTable.userId, req.userId!)))
+    .returning();
   if (!entry) {
     res.status(404).json({ error: "Expense entry not found" });
     return;
@@ -100,6 +107,7 @@ router.put("/expenses/:id", async (req, res): Promise<void> => {
     categoryName: category[0]?.name ?? "Unknown",
     categoryIcon: category[0]?.icon ?? "circle",
     categoryColor: category[0]?.color ?? "#6366f1",
+    notes: entry.notes ?? undefined,
   }));
 });
 
@@ -109,7 +117,10 @@ router.delete("/expenses/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: params.error.message });
     return;
   }
-  const [deleted] = await db.delete(expensesTable).where(eq(expensesTable.id, params.data.id)).returning();
+  const [deleted] = await db
+    .delete(expensesTable)
+    .where(and(eq(expensesTable.id, params.data.id), eq(expensesTable.userId, req.userId!)))
+    .returning();
   if (!deleted) {
     res.status(404).json({ error: "Expense entry not found" });
     return;

@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useListCategories, useCreateCategory, useDeleteCategory, getListCategoriesQueryKey
 } from "@workspace/api-client-react";
-import { Plus, Trash2, Tag } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -69,7 +69,6 @@ export default function Categories() {
         </button>
       </div>
 
-      {/* Form */}
       {showForm && (
         <div className="bg-card border border-card-border rounded-xl p-5">
           <h2 className="font-semibold mb-4">New Category</h2>
@@ -125,7 +124,6 @@ export default function Categories() {
         <div className="text-center text-muted-foreground p-8">Loading...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Income Categories */}
           <div className="bg-card border border-card-border rounded-xl overflow-hidden">
             <div className="px-5 py-3 border-b border-border flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -136,7 +134,7 @@ export default function Categories() {
             ) : (
               <div className="divide-y divide-border">
                 {incomeCategories.map(cat => (
-                  <div key={cat.id} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/30 transition-colors">
+                  <div key={`income-${cat.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/30 transition-colors">
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: cat.color }}>
                       {cat.name.slice(0, 2).toUpperCase()}
                     </div>
@@ -151,7 +149,6 @@ export default function Categories() {
             )}
           </div>
 
-          {/* Expense Categories */}
           <div className="bg-card border border-card-border rounded-xl overflow-hidden">
             <div className="px-5 py-3 border-b border-border flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-red-500" />
@@ -162,7 +159,7 @@ export default function Categories() {
             ) : (
               <div className="divide-y divide-border">
                 {expenseCategories.map(cat => (
-                  <div key={cat.id} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/30 transition-colors">
+                  <div key={`expense-${cat.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-muted/30 transition-colors">
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: cat.color }}>
                       {cat.name.slice(0, 2).toUpperCase()}
                     </div>

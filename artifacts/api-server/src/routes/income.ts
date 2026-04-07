@@ -21,7 +21,12 @@ router.get("/income", async (req, res): Promise<void> => {
   }
   const { month } = queryParams.data;
 
-  let query = db
+  const conditions = [eq(incomeTable.userId, req.userId!)];
+  if (month) {
+    conditions.push(sql`to_char(${incomeTable.date}::date, 'YYYY-MM') = ${month}`);
+  }
+
+  const rows = await db
     .select({
       id: incomeTable.id,
       source: incomeTable.source,
@@ -33,21 +38,15 @@ router.get("/income", async (req, res): Promise<void> => {
       createdAt: incomeTable.createdAt,
     })
     .from(incomeTable)
-    .leftJoin(categoriesTable, eq(incomeTable.categoryId, categoriesTable.id));
-
-  const conditions = [];
-  if (month) {
-    conditions.push(sql`to_char(${incomeTable.date}::date, 'YYYY-MM') = ${month}`);
-  }
-
-  const rows = conditions.length > 0
-    ? await query.where(and(...conditions)).orderBy(incomeTable.date)
-    : await query.orderBy(incomeTable.date);
+    .leftJoin(categoriesTable, eq(incomeTable.categoryId, categoriesTable.id))
+    .where(and(...conditions))
+    .orderBy(incomeTable.date);
 
   const mapped = rows.map(r => ({
     ...r,
     amount: parseFloat(r.amount),
     categoryName: r.categoryName ?? "Unknown",
+    notes: r.notes ?? undefined,
   }));
 
   res.json(ListIncomeResponse.parse(mapped));
@@ -59,12 +58,16 @@ router.post("/income", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [entry] = await db.insert(incomeTable).values({ ...parsed.data, amount: String(parsed.data.amount) }).returning();
+  const [entry] = await db
+    .insert(incomeTable)
+    .values({ ...parsed.data, userId: req.userId, amount: String(parsed.data.amount) })
+    .returning();
   const category = await db.select().from(categoriesTable).where(eq(categoriesTable.id, entry.categoryId)).limit(1);
   res.status(201).json({
     ...entry,
     amount: parseFloat(entry.amount),
     categoryName: category[0]?.name ?? "Unknown",
+    notes: entry.notes ?? undefined,
   });
 });
 
@@ -79,7 +82,11 @@ router.put("/income/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [entry] = await db.update(incomeTable).set({ ...parsed.data, amount: String(parsed.data.amount) }).where(eq(incomeTable.id, params.data.id)).returning();
+  const [entry] = await db
+    .update(incomeTable)
+    .set({ ...parsed.data, amount: String(parsed.data.amount) })
+    .where(and(eq(incomeTable.id, params.data.id), eq(incomeTable.userId, req.userId!)))
+    .returning();
   if (!entry) {
     res.status(404).json({ error: "Income entry not found" });
     return;
@@ -89,6 +96,7 @@ router.put("/income/:id", async (req, res): Promise<void> => {
     ...entry,
     amount: parseFloat(entry.amount),
     categoryName: category[0]?.name ?? "Unknown",
+    notes: entry.notes ?? undefined,
   }));
 });
 
@@ -98,7 +106,10 @@ router.delete("/income/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: params.error.message });
     return;
   }
-  const [deleted] = await db.delete(incomeTable).where(eq(incomeTable.id, params.data.id)).returning();
+  const [deleted] = await db
+    .delete(incomeTable)
+    .where(and(eq(incomeTable.id, params.data.id), eq(incomeTable.userId, req.userId!)))
+    .returning();
   if (!deleted) {
     res.status(404).json({ error: "Income entry not found" });
     return;

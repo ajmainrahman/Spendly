@@ -9,9 +9,11 @@ import {
   Tag,
   BarChart3,
   Menu,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
 import spendlyLogo from "@/assets/spendly-logo.png";
+import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -26,6 +28,7 @@ const navItems = [
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -52,6 +55,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
+
         <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = location === href || (href !== "/" && location.startsWith(href));
@@ -73,7 +77,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="p-4 border-t border-sidebar-border">
+
+        <div className="p-4 border-t border-sidebar-border space-y-3">
+          {user && (
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm shrink-0">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-sidebar-foreground truncate">{user.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+              </div>
+              <button
+                onClick={logout}
+                title="Sign out"
+                className="p-1.5 rounded-md hover:bg-destructive/15 text-muted-foreground hover:text-destructive transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
           <p className="text-xs text-muted-foreground text-center">All amounts in BDT (৳)</p>
         </div>
       </aside>
@@ -92,6 +115,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </button>
           <img src={spendlyLogo} alt="Spendly" className="w-7 h-7 rounded-lg object-cover" />
           <span className="font-bold text-sm tracking-tight">Spendly</span>
+          {user && (
+            <button
+              onClick={logout}
+              className="ml-auto p-1.5 rounded-md hover:bg-muted text-muted-foreground"
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </div>

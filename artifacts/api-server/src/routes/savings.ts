@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, sql } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { db, savingsGoalsTable } from "@workspace/db";
 import {
   CreateSavingsGoalBody,
@@ -24,11 +24,17 @@ function mapGoal(goal: { id: number; name: string; targetAmount: string; current
     targetAmount,
     currentAmount,
     percentComplete,
+    notes: goal.notes ?? undefined,
+    deadline: goal.deadline ?? undefined,
   };
 }
 
-router.get("/savings-goals", async (_req, res): Promise<void> => {
-  const goals = await db.select().from(savingsGoalsTable).orderBy(savingsGoalsTable.createdAt);
+router.get("/savings-goals", async (req, res): Promise<void> => {
+  const goals = await db
+    .select()
+    .from(savingsGoalsTable)
+    .where(eq(savingsGoalsTable.userId, req.userId!))
+    .orderBy(savingsGoalsTable.createdAt);
   res.json(ListSavingsGoalsResponse.parse(goals.map(mapGoal)));
 });
 
@@ -40,6 +46,7 @@ router.post("/savings-goals", async (req, res): Promise<void> => {
   }
   const [goal] = await db.insert(savingsGoalsTable).values({
     ...parsed.data,
+    userId: req.userId,
     targetAmount: String(parsed.data.targetAmount),
     currentAmount: String(parsed.data.currentAmount ?? 0),
   }).returning();
@@ -57,11 +64,15 @@ router.put("/savings-goals/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [goal] = await db.update(savingsGoalsTable).set({
-    ...parsed.data,
-    targetAmount: String(parsed.data.targetAmount),
-    currentAmount: String(parsed.data.currentAmount ?? 0),
-  }).where(eq(savingsGoalsTable.id, params.data.id)).returning();
+  const [goal] = await db
+    .update(savingsGoalsTable)
+    .set({
+      ...parsed.data,
+      targetAmount: String(parsed.data.targetAmount),
+      currentAmount: String(parsed.data.currentAmount ?? 0),
+    })
+    .where(and(eq(savingsGoalsTable.id, params.data.id), eq(savingsGoalsTable.userId, req.userId!)))
+    .returning();
   if (!goal) {
     res.status(404).json({ error: "Savings goal not found" });
     return;
@@ -75,7 +86,10 @@ router.delete("/savings-goals/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: params.error.message });
     return;
   }
-  const [deleted] = await db.delete(savingsGoalsTable).where(eq(savingsGoalsTable.id, params.data.id)).returning();
+  const [deleted] = await db
+    .delete(savingsGoalsTable)
+    .where(and(eq(savingsGoalsTable.id, params.data.id), eq(savingsGoalsTable.userId, req.userId!)))
+    .returning();
   if (!deleted) {
     res.status(404).json({ error: "Savings goal not found" });
     return;
@@ -97,7 +111,7 @@ router.post("/savings-goals/:id/contribution", async (req, res): Promise<void> =
   const [goal] = await db
     .update(savingsGoalsTable)
     .set({ currentAmount: sql`${savingsGoalsTable.currentAmount} + ${String(parsed.data.amount)}` })
-    .where(eq(savingsGoalsTable.id, params.data.id))
+    .where(and(eq(savingsGoalsTable.id, params.data.id), eq(savingsGoalsTable.userId, req.userId!)))
     .returning();
   if (!goal) {
     res.status(404).json({ error: "Savings goal not found" });

@@ -35,13 +35,14 @@ router.get("/budgets", async (req, res): Promise<void> => {
     })
     .from(budgetsTable)
     .leftJoin(categoriesTable, eq(budgetsTable.categoryId, categoriesTable.id))
-    .where(eq(budgetsTable.month, targetMonth));
+    .where(and(eq(budgetsTable.userId, req.userId!), eq(budgetsTable.month, targetMonth)));
 
   const result = await Promise.all(budgetRows.map(async (budget) => {
     const spent = await db
       .select({ total: sql<string>`coalesce(sum(${expensesTable.amount}), 0)` })
       .from(expensesTable)
       .where(and(
+        eq(expensesTable.userId, req.userId!),
         eq(expensesTable.categoryId, budget.categoryId),
         sql`to_char(${expensesTable.date}::date, 'YYYY-MM') = ${targetMonth}`
       ));
@@ -70,7 +71,10 @@ router.post("/budgets", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [entry] = await db.insert(budgetsTable).values({ ...parsed.data, budgetAmount: String(parsed.data.budgetAmount) }).returning();
+  const [entry] = await db
+    .insert(budgetsTable)
+    .values({ ...parsed.data, userId: req.userId, budgetAmount: String(parsed.data.budgetAmount) })
+    .returning();
   const category = await db.select().from(categoriesTable).where(eq(categoriesTable.id, entry.categoryId)).limit(1);
   const budgetAmount = parseFloat(entry.budgetAmount);
   res.status(201).json({
@@ -96,7 +100,11 @@ router.put("/budgets/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [entry] = await db.update(budgetsTable).set({ ...parsed.data, budgetAmount: String(parsed.data.budgetAmount) }).where(eq(budgetsTable.id, params.data.id)).returning();
+  const [entry] = await db
+    .update(budgetsTable)
+    .set({ ...parsed.data, budgetAmount: String(parsed.data.budgetAmount) })
+    .where(and(eq(budgetsTable.id, params.data.id), eq(budgetsTable.userId, req.userId!)))
+    .returning();
   if (!entry) {
     res.status(404).json({ error: "Budget not found" });
     return;
@@ -107,6 +115,7 @@ router.put("/budgets/:id", async (req, res): Promise<void> => {
     .select({ total: sql<string>`coalesce(sum(${expensesTable.amount}), 0)` })
     .from(expensesTable)
     .where(and(
+      eq(expensesTable.userId, req.userId!),
       eq(expensesTable.categoryId, entry.categoryId),
       sql`to_char(${expensesTable.date}::date, 'YYYY-MM') = ${entry.month}`
     ));
@@ -129,7 +138,10 @@ router.delete("/budgets/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: params.error.message });
     return;
   }
-  const [deleted] = await db.delete(budgetsTable).where(eq(budgetsTable.id, params.data.id)).returning();
+  const [deleted] = await db
+    .delete(budgetsTable)
+    .where(and(eq(budgetsTable.id, params.data.id), eq(budgetsTable.userId, req.userId!)))
+    .returning();
   if (!deleted) {
     res.status(404).json({ error: "Budget not found" });
     return;

@@ -1,9 +1,11 @@
-import { pgTable, text, serial, timestamp, numeric, date } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, numeric, date, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+import { usersTable } from "./users";
 
 export const savingsGoalsTable = pgTable("savings_goals", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => usersTable.id),
   name: text("name").notNull(),
   targetAmount: numeric("target_amount", { precision: 12, scale: 2 }).notNull(),
   currentAmount: numeric("current_amount", { precision: 12, scale: 2 }).notNull().default("0"),

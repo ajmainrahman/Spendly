@@ -4,7 +4,7 @@ uploads = []
 id = "R22fO4804WEep_mCXNdfv"
 uri = "file://artifacts/budget-tracker/src/assets/spendly-logo.png"
 type = "image"
-title = "spendly logo icon"
+title = "spendly logo clean"
 
 [[outputs]]
 id = "KJoktB-wIIsWxGwo6Yyg6"

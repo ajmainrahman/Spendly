@@ -1,3 +1,4 @@
+export * from "./users";
 export * from "./categories";
 export * from "./income";
 export * from "./expenses";
