@@ -1,8 +1,19 @@
 uploads = []
-generated = []
+
+[[generated]]
+id = "R22fO4804WEep_mCXNdfv"
+uri = "file://artifacts/budget-tracker/src/assets/spendly-logo.png"
+type = "image"
+title = "spendly logo icon"
 
 [[outputs]]
 id = "KJoktB-wIIsWxGwo6Yyg6"
 uri = "file://README.md"
 type = "text"
 title = "README — Setup & Deployment Guide"
+
+[[outputs]]
+id = "5eYCgicFSfgwRgYEuy1ig"
+uri = "file://artifacts/budget-tracker/src/assets/spendly-logo.png"
+type = "image"
+title = "Spendly Logo"

@@ -9,9 +9,9 @@ import {
   Tag,
   BarChart3,
   Menu,
-  X,
 } from "lucide-react";
 import { useState } from "react";
+import spendlyLogo from "@/assets/spendly-logo.png";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -36,13 +36,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       >
         <div className="p-5 border-b border-sidebar-border">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <PiggyBank className="w-4 h-4 text-primary-foreground" />
-            </div>
+          <div className="flex items-center gap-3">
+            <img
+              src={spendlyLogo}
+              alt="Spendly logo"
+              className="w-9 h-9 rounded-xl object-cover shrink-0 shadow-sm"
+            />
             <div>
-              <div className="font-bold text-sidebar-foreground text-sm leading-none">BudgetBD</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Financial Planner</div>
+              <div className="font-bold text-sidebar-foreground text-base leading-none tracking-tight">
+                Spendly
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5 leading-none">
+                spending made friendly
+              </div>
             </div>
           </div>
         </div>
@@ -84,7 +90,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <button onClick={() => setMobileOpen(true)} className="p-1.5 rounded-md hover:bg-muted">
             <Menu className="w-5 h-5" />
           </button>
-          <span className="font-semibold text-sm">BudgetBD</span>
+          <img src={spendlyLogo} alt="Spendly" className="w-7 h-7 rounded-lg object-cover" />
+          <span className="font-bold text-sm tracking-tight">Spendly</span>
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </div>
