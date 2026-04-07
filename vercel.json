@@ -1,13 +1,13 @@
 {
-  "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @workspace/budget-tracker run build",
+  "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/budget-tracker run build",
   "outputDirectory": "artifacts/budget-tracker/dist/public",
   "functions": {
-    "api/index.ts": {
+    "api/index.js": {
       "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.ts" },
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
