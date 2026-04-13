@@ -12,7 +12,6 @@ import Savings from "@/pages/Savings";
 import Categories from "@/pages/Categories";
 import Reports from "@/pages/Reports";
 import Auth from "@/pages/Auth";
-import ResetPassword from "@/pages/ResetPassword";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,12 +34,6 @@ function AppRoutes() {
         </div>
       </div>
     );
-  }
-
-  const searchParams = new URLSearchParams(window.location.search);
-  const resetToken = searchParams.get("token");
-  if (window.location.pathname.endsWith("/reset-password") && resetToken) {
-    return <ResetPassword token={resetToken} />;
   }
 
   if (!user) {
