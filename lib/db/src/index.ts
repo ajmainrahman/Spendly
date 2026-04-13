@@ -1,12 +1,6 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
-
-// Use the ws package as the WebSocket constructor in Node.js environments
-// (Vercel serverless and Replit). In Edge/browser environments the native
-// WebSocket is used automatically.
-neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -14,7 +8,7 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle(pool, { schema });
+const sql = neon(process.env.DATABASE_URL);
+export const db = drizzle(sql, { schema });
 
 export * from "./schema";
