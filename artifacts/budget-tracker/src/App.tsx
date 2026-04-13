@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -12,8 +11,8 @@ import Budgets from "@/pages/Budgets";
 import Savings from "@/pages/Savings";
 import Categories from "@/pages/Categories";
 import Reports from "@/pages/Reports";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
+import Auth from "@/pages/Auth";
+import ResetPassword from "@/pages/ResetPassword";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +25,6 @@ const queryClient = new QueryClient({
 
 function AppRoutes() {
   const { user, loading } = useAuth();
-  const [showRegister, setShowRegister] = useState(false);
 
   if (loading) {
     return (
@@ -39,10 +37,14 @@ function AppRoutes() {
     );
   }
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const resetToken = searchParams.get("token");
+  if (window.location.pathname.endsWith("/reset-password") && resetToken) {
+    return <ResetPassword token={resetToken} />;
+  }
+
   if (!user) {
-    return showRegister
-      ? <Register onSwitch={() => setShowRegister(false)} />
-      : <Login onSwitch={() => setShowRegister(true)} />;
+    return <Auth />;
   }
 
   return (
