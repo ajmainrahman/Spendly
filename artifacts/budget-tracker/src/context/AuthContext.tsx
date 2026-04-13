@@ -62,25 +62,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
+  const safeJson = async (res: Response) => {
+    try {
+      return await res.json();
+    } catch {
+      throw new Error("Could not reach the server. Please try again.");
+    }
+  };
+
   const login = async (email: string, password: string) => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
+    let res: Response;
+    try {
+      res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+    } catch {
+      throw new Error("Could not reach the server. Please try again.");
+    }
+    const data = await safeJson(res);
     if (!res.ok) throw new Error(data.error ?? "Login failed");
     setToken(data.token);
     setUser(data.user);
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-    const data = await res.json();
+    let res: Response;
+    try {
+      res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+    } catch {
+      throw new Error("Could not reach the server. Please try again.");
+    }
+    const data = await safeJson(res);
     if (!res.ok) throw new Error(data.error ?? "Registration failed");
     setToken(data.token);
     setUser(data.user);
