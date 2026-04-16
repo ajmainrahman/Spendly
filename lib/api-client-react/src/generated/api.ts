@@ -26,6 +26,7 @@ import type {
   CreateCategoryBody,
   CreateExpenseBody,
   CreateIncomeBody,
+  CreateLoanBody,
   CreateSavingsGoalBody,
   DashboardSummary,
   ExpenseEntry,
@@ -38,8 +39,10 @@ import type {
   ListBudgetsParams,
   ListExpensesParams,
   ListIncomeParams,
+  LoanEntry,
   MonthlyTrendPoint,
   SavingsGoal,
+  UpdateLoanBody,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -2239,3 +2242,203 @@ export function useGetBudgetVsActual<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+// ─── Loans ──────────────────────────────────────────────────────────────────
+
+export const getListLoansUrl = () => `/api/loans`;
+
+export const listLoans = async (options?: RequestInit): Promise<LoanEntry[]> =>
+  customFetch<LoanEntry[]>(getListLoansUrl(), { ...options, method: "GET" });
+
+export const getListLoansQueryKey = () => [`/api/loans`] as const;
+
+export const getListLoansQueryOptions = <
+  TData = Awaited<ReturnType<typeof listLoans>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof listLoans>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getListLoansQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listLoans>>> = ({ signal }) =>
+    listLoans({ signal, ...requestOptions });
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listLoans>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export function useListLoans<
+  TData = Awaited<ReturnType<typeof listLoans>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof listLoans>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListLoansQueryOptions(options);
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getCreateLoanUrl = () => `/api/loans`;
+
+export const createLoan = async (
+  createLoanBody: CreateLoanBody,
+  options?: RequestInit,
+): Promise<LoanEntry> =>
+  customFetch<LoanEntry>(getCreateLoanUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createLoanBody),
+  });
+
+export const getCreateLoanMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createLoan>>,
+    TError,
+    { data: BodyType<CreateLoanBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createLoan>>,
+  TError,
+  { data: BodyType<CreateLoanBody> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createLoan>>,
+    { data: BodyType<CreateLoanBody> }
+  > = ({ data }) => createLoan(data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export const useCreateLoan = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createLoan>>,
+    TError,
+    { data: BodyType<CreateLoanBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createLoan>>,
+  TError,
+  { data: BodyType<CreateLoanBody> },
+  TContext
+> => useMutation(getCreateLoanMutationOptions(options));
+
+export const getUpdateLoanUrl = (id: number) => `/api/loans/${id}`;
+
+export const updateLoan = async (
+  id: number,
+  updateLoanBody: UpdateLoanBody,
+  options?: RequestInit,
+): Promise<LoanEntry> =>
+  customFetch<LoanEntry>(getUpdateLoanUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(updateLoanBody),
+  });
+
+export const getUpdateLoanMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateLoan>>,
+    TError,
+    { id: number; data: BodyType<UpdateLoanBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateLoan>>,
+  TError,
+  { id: number; data: BodyType<UpdateLoanBody> },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateLoan>>,
+    { id: number; data: BodyType<UpdateLoanBody> }
+  > = ({ id, data }) => updateLoan(id, data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export const useUpdateLoan = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateLoan>>,
+    TError,
+    { id: number; data: BodyType<UpdateLoanBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateLoan>>,
+  TError,
+  { id: number; data: BodyType<UpdateLoanBody> },
+  TContext
+> => useMutation(getUpdateLoanMutationOptions(options));
+
+export const getDeleteLoanUrl = (id: number) => `/api/loans/${id}`;
+
+export const deleteLoan = async (id: number, options?: RequestInit): Promise<void> =>
+  customFetch<void>(getDeleteLoanUrl(id), { ...options, method: "DELETE" });
+
+export const getDeleteLoanMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteLoan>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteLoan>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteLoan>>,
+    { id: number }
+  > = ({ id }) => deleteLoan(id, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export const useDeleteLoan = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteLoan>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteLoan>>,
+  TError,
+  { id: number },
+  TContext
+> => useMutation(getDeleteLoanMutationOptions(options));

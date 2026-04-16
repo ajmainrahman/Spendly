@@ -8,6 +8,7 @@ import expensesRouter from "./expenses";
 import budgetsRouter from "./budgets";
 import savingsRouter from "./savings";
 import dashboardRouter from "./dashboard";
+import loansRouter from "./loans";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(expensesRouter);
 router.use(budgetsRouter);
 router.use(savingsRouter);
 router.use(dashboardRouter);
+router.use(loansRouter);
 
 export default router;

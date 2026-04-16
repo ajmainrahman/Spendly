@@ -209,6 +209,34 @@ export type GetMonthlyTrendParams = {
   months?: number;
 };
 
+export interface LoanEntry {
+  id: number;
+  lenderName: string;
+  amount: number;
+  borrowedDate: string;
+  deadline: string;
+  notes?: string;
+  isPaid: boolean;
+  createdAt: string;
+}
+
+export interface CreateLoanBody {
+  lenderName: string;
+  amount: number;
+  borrowedDate: string;
+  deadline: string;
+  notes?: string;
+}
+
+export interface UpdateLoanBody {
+  lenderName: string;
+  amount: number;
+  borrowedDate: string;
+  deadline: string;
+  notes?: string;
+  isPaid: boolean;
+}
+
 export type GetBudgetVsActualParams = {
   /**
    * Format: YYYY-MM. Defaults to current month.

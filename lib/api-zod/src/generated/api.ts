@@ -324,6 +324,67 @@ export const AddSavingsContributionResponse = zod.object({
 });
 
 /**
+ * @summary List loans
+ */
+export const ListLoansResponse = zod.array(
+  zod.object({
+    id: zod.number(),
+    lenderName: zod.string(),
+    amount: zod.number(),
+    borrowedDate: zod.string(),
+    deadline: zod.string(),
+    notes: zod.string().optional(),
+    isPaid: zod.boolean(),
+    createdAt: zod.coerce.date(),
+  }),
+);
+
+/**
+ * @summary Create a loan
+ */
+export const CreateLoanBody = zod.object({
+  lenderName: zod.string().min(1),
+  amount: zod.number().positive(),
+  borrowedDate: zod.string(),
+  deadline: zod.string(),
+  notes: zod.string().optional(),
+});
+
+/**
+ * @summary Update a loan
+ */
+export const UpdateLoanParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateLoanBody = zod.object({
+  lenderName: zod.string().min(1),
+  amount: zod.number().positive(),
+  borrowedDate: zod.string(),
+  deadline: zod.string(),
+  notes: zod.string().optional(),
+  isPaid: zod.boolean(),
+});
+
+export const UpdateLoanResponse = zod.object({
+  id: zod.number(),
+  lenderName: zod.string(),
+  amount: zod.number(),
+  borrowedDate: zod.string(),
+  deadline: zod.string(),
+  notes: zod.string().optional(),
+  isPaid: zod.boolean(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Delete a loan
+ */
+export const DeleteLoanParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+/**
  * @summary Get monthly dashboard summary
  */
 export const GetDashboardSummaryQueryParams = zod.object({
