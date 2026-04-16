@@ -10,7 +10,7 @@ export interface IncomeEntry {
   id: number;
   source: string;
   amount: number;
-  date: Date;
+  date: string;
   categoryId: number;
   categoryName: string;
   notes?: string;

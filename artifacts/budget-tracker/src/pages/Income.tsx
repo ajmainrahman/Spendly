@@ -42,15 +42,16 @@ export default function Income() {
   };
 
   const onSubmit = async (data: FormData) => {
-    if (editId !== null) {
-      await updateMutation.mutateAsync({ id: editId, data: { ...data, amount: data.amount, notes: data.notes || undefined } });
+    const currentEditId = editId;
+    reset();
+    setShowForm(false);
+    setEditId(null);
+    if (currentEditId !== null) {
+      await updateMutation.mutateAsync({ id: currentEditId, data: { ...data, amount: data.amount, notes: data.notes || undefined } });
     } else {
       await createMutation.mutateAsync({ data: { ...data, amount: data.amount, notes: data.notes || undefined } });
     }
     invalidate();
-    reset();
-    setShowForm(false);
-    setEditId(null);
   };
 
   const startEdit = (entry: NonNullable<typeof income>[0]) => {

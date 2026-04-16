@@ -56,7 +56,7 @@ export const ListIncomeResponseItem = zod.object({
   id: zod.number(),
   source: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   notes: zod.string().optional(),
@@ -70,7 +70,7 @@ export const ListIncomeResponse = zod.array(ListIncomeResponseItem);
 export const CreateIncomeBody = zod.object({
   source: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -85,7 +85,7 @@ export const UpdateIncomeParams = zod.object({
 export const UpdateIncomeBody = zod.object({
   source: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -94,7 +94,7 @@ export const UpdateIncomeResponse = zod.object({
   id: zod.number(),
   source: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   notes: zod.string().optional(),
@@ -120,7 +120,7 @@ export const ListExpensesResponseItem = zod.object({
   id: zod.number(),
   description: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   categoryIcon: zod.string(),
@@ -136,7 +136,7 @@ export const ListExpensesResponse = zod.array(ListExpensesResponseItem);
 export const CreateExpenseBody = zod.object({
   description: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -151,7 +151,7 @@ export const UpdateExpenseParams = zod.object({
 export const UpdateExpenseBody = zod.object({
   description: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -160,7 +160,7 @@ export const UpdateExpenseResponse = zod.object({
   id: zod.number(),
   description: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   categoryIcon: zod.string(),
