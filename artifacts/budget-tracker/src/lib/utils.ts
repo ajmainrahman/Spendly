@@ -31,11 +31,17 @@ export function nextMonth(month: string): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
-export function formatDate(date: string): string {
-  return new Date(date + "T00:00:00").toLocaleDateString("en-GB", {
+export function formatDate(date: string | Date): string {
+  const d = date instanceof Date ? date : new Date(date + "T00:00:00");
+  return d.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
+}
+
+export function toDateString(date: string | Date): string {
+  if (date instanceof Date) return date.toISOString().slice(0, 10);
+  return date;
 }
 

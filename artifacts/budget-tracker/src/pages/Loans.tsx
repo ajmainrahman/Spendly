@@ -14,7 +14,7 @@ import {
   useDeleteLoanPayment,
   getListLoanPaymentsQueryKey,
 } from "@workspace/api-client-react";
-import { formatBDT, formatDate } from "@/lib/utils";
+import { formatBDT, formatDate, toDateString } from "@/lib/utils";
 import {
   Plus,
   Pencil,
@@ -255,8 +255,8 @@ export default function Loans() {
     reset({
       lenderName: loan.lenderName,
       amount: loan.amount,
-      borrowedDate: loan.borrowedDate,
-      deadline: loan.deadline,
+      borrowedDate: toDateString(loan.borrowedDate),
+      deadline: toDateString(loan.deadline),
       notes: loan.notes || "",
       isPaid: loan.isPaid,
     });
@@ -270,8 +270,8 @@ export default function Loans() {
       data: {
         lenderName: loan.lenderName,
         amount: loan.amount,
-        borrowedDate: loan.borrowedDate,
-        deadline: loan.deadline,
+        borrowedDate: toDateString(loan.borrowedDate),
+        deadline: toDateString(loan.deadline),
         notes: loan.notes || undefined,
         isPaid: !loan.isPaid,
       },
@@ -291,7 +291,7 @@ export default function Loans() {
 
   const totalOwed = loans?.filter(l => !l.isPaid).reduce((s, l) => s + l.amount, 0) ?? 0;
   const totalPaid = loans?.filter(l => l.isPaid).reduce((s, l) => s + l.amount, 0) ?? 0;
-  const overdueCount = loans?.filter(l => deadlineStatus(l.deadline, l.isPaid) === "overdue").length ?? 0;
+  const overdueCount = loans?.filter(l => deadlineStatus(toDateString(l.deadline), l.isPaid) === "overdue").length ?? 0;
 
   return (
     <div className="space-y-6">
@@ -427,7 +427,7 @@ export default function Loans() {
         ) : (
           <div className="divide-y divide-border">
             {loans.map(loan => {
-              const status = deadlineStatus(loan.deadline, loan.isPaid);
+              const status = deadlineStatus(toDateString(loan.deadline), loan.isPaid);
               const isExpanded = expandedLoanId === loan.id;
               return (
                 <div key={loan.id}>
@@ -456,9 +456,9 @@ export default function Loans() {
                         </div>
                         {!loan.isPaid && (
                           <div className={`text-xs font-medium mt-0.5 ${status === "overdue" ? "text-red-500" : status === "soon" ? "text-amber-500" : "text-muted-foreground"}`}>
-                            {status === "overdue" && <span className="inline-flex items-center gap-0.5"><AlertTriangle className="w-3 h-3" /> {daysUntil(loan.deadline)}</span>}
-                            {status === "soon" && <span className="inline-flex items-center gap-0.5"><Clock className="w-3 h-3" /> {daysUntil(loan.deadline)}</span>}
-                            {status === "ok" && <span>{daysUntil(loan.deadline)}</span>}
+                            {status === "overdue" && <span className="inline-flex items-center gap-0.5"><AlertTriangle className="w-3 h-3" /> {daysUntil(toDateString(loan.deadline))}</span>}
+                            {status === "soon" && <span className="inline-flex items-center gap-0.5"><Clock className="w-3 h-3" /> {daysUntil(toDateString(loan.deadline))}</span>}
+                            {status === "ok" && <span>{daysUntil(toDateString(loan.deadline))}</span>}
                           </div>
                         )}
                         {loan.isPaid && <div className="text-xs text-emerald-600 font-medium mt-0.5">Repaid</div>}
