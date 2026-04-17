@@ -7,6 +7,18 @@
  */
 import * as zod from "zod";
 
+// Compatibility shim: older Zod versions do not expose `.datetime()` on
+// transformed schemas (ZodEffects). The generated client chains `.datetime()`
+// after `.transform()`, so we no-op it when missing to prevent runtime crashes.
+const zodEffectsProto = Object.getPrototypeOf(zod.string().transform(val => val)) as {
+  datetime?: (args?: unknown) => unknown;
+};
+if (typeof zodEffectsProto.datetime !== "function") {
+  zodEffectsProto.datetime = function datetimeCompat() {
+    return this;
+  };
+}
+
 /**
  * @summary Health check
  */
