@@ -19,6 +19,11 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+interface AuthSuccessPayload {
+  token: string;
+  user: AuthUser;
+}
+
 function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
@@ -62,12 +67,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const safeJson = async (res: Response) => {
-    try {
-      return await res.json();
-    } catch {
-      throw new Error("Could not reach the server. Please try again.");
+  const readApiPayload = async (res: Response): Promise<{ error?: string; [key: string]: unknown }> => {
+    const contentType = res.headers.get("content-type") ?? "";
+
+    if (contentType.includes("application/json")) {
+      return (await res.json()) as { error?: string; [key: string]: unknown };
     }
+
+    const text = await res.text();
+    if (!text.trim()) {
+      throw new Error("Empty server response. Check API deployment logs.");
+    }
+
+    if (text.trimStart().startsWith("<!doctype") || text.trimStart().startsWith("<html")) {
+      throw new Error("API route returned HTML instead of JSON. Check Vercel rewrites and serverless function status.");
+    }
+
+    throw new Error(text.slice(0, 220));
   };
 
   const login = async (email: string, password: string) => {
@@ -81,8 +97,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       throw new Error("Could not reach the server. Please try again.");
     }
-    const data = await safeJson(res);
+    const data = (await readApiPayload(res)) as Partial<AuthSuccessPayload> & { error?: string };
     if (!res.ok) throw new Error(data.error ?? "Login failed");
+    if (!data.token || !data.user) {
+      throw new Error("Invalid login response from server");
+    }
     setToken(data.token);
     setUser(data.user);
   };
@@ -98,8 +117,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       throw new Error("Could not reach the server. Please try again.");
     }
-    const data = await safeJson(res);
+    const data = (await readApiPayload(res)) as Partial<AuthSuccessPayload> & { error?: string };
     if (!res.ok) throw new Error(data.error ?? "Registration failed");
+    if (!data.token || !data.user) {
+      throw new Error("Invalid registration response from server");
+    }
     setToken(data.token);
     setUser(data.user);
   };

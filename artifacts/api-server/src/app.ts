@@ -42,5 +42,15 @@ app.use("/api", router);
 // already stripped (e.g. `/auth/login`). Mounting the same router at root
 // keeps auth and API routes reachable in both environments.
 app.use(router);
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  logger.error({ err }, "Unhandled API error");
+
+  const message =
+    err instanceof Error && err.message.trim().length > 0
+      ? err.message
+      : "Internal server error";
+
+  res.status(500).json({ error: message });
+});
 
 export default app;
