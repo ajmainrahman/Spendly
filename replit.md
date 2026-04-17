@@ -20,13 +20,30 @@ Migrated from Vercel to Replit.
 
 ## Artifacts
 
-- `artifacts/budget-tracker` — React/Vite frontend, served at `/` on port 18541
+- `artifacts/budget-tracker` — React/Vite frontend, served at `/` on port 5000
 - `artifacts/api-server` — Express 5 API server, served at `/api` on port 8080
 
 ## Workflows
 
-- **Start application** — `PORT=18541 pnpm --filter @workspace/budget-tracker run dev` (port 18541)
+- **Start application** — `PORT=5000 pnpm --filter @workspace/budget-tracker run dev` (port 5000)
 - **API Server** — `pnpm --filter @workspace/api-server run dev` (port 8080, includes build step)
+
+## Features
+
+- Dashboard with summary cards, charts, budget vs actual, and loan overview widget
+- Income / Expenses CRUD with category assignment and month filter
+- Budgets per category per month
+- Savings Goals with progress tracking
+- Loans with partial payment tracking and progress bar
+- Notepad with auto-save
+- Export page: PDF (via jsPDF + autoTable) and CSV for Income, Expenses, Loans, Savings Goals
+
+## Critical Notes
+
+- **Orval config**: `response` coerce does NOT include `'date'` — keep `useDates: false` to prevent date fields being coerced to Date objects. All dates stay as strings.
+- **Dashboard null bug**: `topExpenseCategory` must use `?? undefined` (not `?? null`) in dashboard.ts route — Zod `optional()` accepts undefined but NOT null.
+- **Port**: Frontend runs on PORT=5000; artifact.toml localPort=5000. API on 8080.
+- **Codegen**: Run `pnpm --filter @workspace/api-spec run codegen` after any OpenAPI spec change; restart both workflows after codegen.
 
 ## Key Commands
 

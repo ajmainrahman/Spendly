@@ -14,6 +14,7 @@ import Reports from "@/pages/Reports";
 import Auth from "@/pages/Auth";
 import Loans from "@/pages/Loans";
 import Notepad from "@/pages/Notepad";
+import Export from "@/pages/Export";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +56,7 @@ function AppRoutes() {
           <Route path="/notepad" component={Notepad} />
           <Route path="/categories" component={Categories} />
           <Route path="/reports" component={Reports} />
+          <Route path="/export" component={Export} />
         </Switch>
       </Layout>
     </WouterRouter>

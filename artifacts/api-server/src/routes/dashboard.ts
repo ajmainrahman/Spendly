@@ -71,7 +71,7 @@ router.get("/dashboard/summary", async (req, res): Promise<void> => {
     netSavings,
     savingsRate,
     budgetUtilization,
-    topExpenseCategory: topCategoryRows[0]?.name ?? null,
+    topExpenseCategory: topCategoryRows[0]?.name ?? undefined,
     transactionCount,
   }));
 });

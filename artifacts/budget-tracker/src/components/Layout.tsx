@@ -12,6 +12,7 @@ import {
   LogOut,
   HandCoins,
   NotebookPen,
+  FileDown,
 } from "lucide-react";
 import { useState } from "react";
 import spendlyLogo from "@/assets/spendly-logo.png";
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/notepad", label: "Notepad", icon: NotebookPen },
   { href: "/categories", label: "Categories", icon: Tag },
   { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/export", label: "Export", icon: FileDown },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
