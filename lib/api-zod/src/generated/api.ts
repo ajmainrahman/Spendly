@@ -482,7 +482,7 @@ export const GetDashboardSummaryResponse = zod.object({
   netSavings: zod.number(),
   savingsRate: zod.number(),
   budgetUtilization: zod.number(),
-  topExpenseCategory: zod.string().optional(),
+  topExpenseCategory: zod.string().nullable().optional(),
   transactionCount: zod.number(),
 });
 
