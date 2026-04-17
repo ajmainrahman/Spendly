@@ -2,13 +2,23 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+const databaseUrl = process.env.DATABASE_URL;
+
+function createMissingDbProxy() {
+  return new Proxy(
+    {},
+    {
+      get() {
+        throw new Error(
+          "DATABASE_URL is not configured in the runtime environment. Set it in Vercel project settings.",
+        );
+      },
+    },
   );
 }
 
-const sql = neon(process.env.DATABASE_URL);
-export const db = drizzle(sql, { schema });
+export const db = databaseUrl
+  ? drizzle(neon(databaseUrl), { schema })
+  : (createMissingDbProxy() as ReturnType<typeof drizzle<typeof schema>>);
 
 export * from "./schema";
