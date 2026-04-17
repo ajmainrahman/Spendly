@@ -9,7 +9,7 @@
 export interface CreateIncomeBody {
   source: string;
   amount: number;
-  date: Date;
+  date: string;
   categoryId: number;
   notes?: string;
 }

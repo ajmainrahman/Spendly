@@ -8,6 +8,6 @@
 
 export interface CreateLoanPaymentBody {
   amount: number;
-  paidDate: Date;
+  paidDate: string;
   notes?: string;
 }

@@ -9,8 +9,8 @@
 export interface UpdateLoanBody {
   lenderName: string;
   amount: number;
-  borrowedDate: Date;
-  deadline: Date;
+  borrowedDate: string;
+  deadline: string;
   notes?: string;
   isPaid: boolean;
 }

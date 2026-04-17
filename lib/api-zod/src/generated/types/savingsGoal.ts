@@ -11,8 +11,8 @@ export interface SavingsGoal {
   name: string;
   targetAmount: number;
   currentAmount: number;
-  deadline?: Date;
+  deadline?: string;
   notes?: string;
   percentComplete: number;
-  createdAt: Date;
+  createdAt: string;
 }

@@ -13,5 +13,5 @@ export interface Category {
   icon: string;
   color: string;
   type: CategoryType;
-  createdAt: Date;
+  createdAt: string;
 }

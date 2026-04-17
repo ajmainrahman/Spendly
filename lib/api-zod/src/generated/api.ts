@@ -23,7 +23,7 @@ export const ListCategoriesResponseItem = zod.object({
   icon: zod.string(),
   color: zod.string(),
   type: zod.enum(["income", "expense", "both"]),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 export const ListCategoriesResponse = zod.array(ListCategoriesResponseItem);
 
@@ -56,11 +56,11 @@ export const ListIncomeResponseItem = zod.object({
   id: zod.number(),
   source: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string().date(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   notes: zod.string().optional(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 export const ListIncomeResponse = zod.array(ListIncomeResponseItem);
 
@@ -70,7 +70,7 @@ export const ListIncomeResponse = zod.array(ListIncomeResponseItem);
 export const CreateIncomeBody = zod.object({
   source: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string().date(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -85,7 +85,7 @@ export const UpdateIncomeParams = zod.object({
 export const UpdateIncomeBody = zod.object({
   source: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string().date(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -94,11 +94,11 @@ export const UpdateIncomeResponse = zod.object({
   id: zod.number(),
   source: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string().date(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   notes: zod.string().optional(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 
 /**
@@ -120,13 +120,13 @@ export const ListExpensesResponseItem = zod.object({
   id: zod.number(),
   description: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string().date(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   categoryIcon: zod.string(),
   categoryColor: zod.string(),
   notes: zod.string().optional(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 export const ListExpensesResponse = zod.array(ListExpensesResponseItem);
 
@@ -136,7 +136,7 @@ export const ListExpensesResponse = zod.array(ListExpensesResponseItem);
 export const CreateExpenseBody = zod.object({
   description: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string().date(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -151,7 +151,7 @@ export const UpdateExpenseParams = zod.object({
 export const UpdateExpenseBody = zod.object({
   description: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string().date(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -160,13 +160,13 @@ export const UpdateExpenseResponse = zod.object({
   id: zod.number(),
   description: zod.string(),
   amount: zod.number(),
-  date: zod.coerce.date(),
+  date: zod.string().date(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   categoryIcon: zod.string(),
   categoryColor: zod.string(),
   notes: zod.string().optional(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 
 /**
@@ -194,7 +194,7 @@ export const ListBudgetsResponseItem = zod.object({
   spentAmount: zod.number(),
   remainingAmount: zod.number(),
   percentUsed: zod.number(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 export const ListBudgetsResponse = zod.array(ListBudgetsResponseItem);
 
@@ -231,7 +231,7 @@ export const UpdateBudgetResponse = zod.object({
   spentAmount: zod.number(),
   remainingAmount: zod.number(),
   percentUsed: zod.number(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 
 /**
@@ -249,10 +249,10 @@ export const ListSavingsGoalsResponseItem = zod.object({
   name: zod.string(),
   targetAmount: zod.number(),
   currentAmount: zod.number(),
-  deadline: zod.coerce.date().optional(),
+  deadline: zod.string().date().optional(),
   notes: zod.string().optional(),
   percentComplete: zod.number(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 export const ListSavingsGoalsResponse = zod.array(ListSavingsGoalsResponseItem);
 
@@ -263,7 +263,7 @@ export const CreateSavingsGoalBody = zod.object({
   name: zod.string(),
   targetAmount: zod.number(),
   currentAmount: zod.number(),
-  deadline: zod.coerce.date().optional(),
+  deadline: zod.string().date().optional(),
   notes: zod.string().optional(),
 });
 
@@ -278,7 +278,7 @@ export const UpdateSavingsGoalBody = zod.object({
   name: zod.string(),
   targetAmount: zod.number(),
   currentAmount: zod.number(),
-  deadline: zod.coerce.date().optional(),
+  deadline: zod.string().date().optional(),
   notes: zod.string().optional(),
 });
 
@@ -287,10 +287,10 @@ export const UpdateSavingsGoalResponse = zod.object({
   name: zod.string(),
   targetAmount: zod.number(),
   currentAmount: zod.number(),
-  deadline: zod.coerce.date().optional(),
+  deadline: zod.string().date().optional(),
   notes: zod.string().optional(),
   percentComplete: zod.number(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 
 /**
@@ -317,10 +317,10 @@ export const AddSavingsContributionResponse = zod.object({
   name: zod.string(),
   targetAmount: zod.number(),
   currentAmount: zod.number(),
-  deadline: zod.coerce.date().optional(),
+  deadline: zod.string().date().optional(),
   notes: zod.string().optional(),
   percentComplete: zod.number(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 
 /**
@@ -330,11 +330,11 @@ export const ListLoansResponseItem = zod.object({
   id: zod.number(),
   lenderName: zod.string(),
   amount: zod.number(),
-  borrowedDate: zod.coerce.date(),
-  deadline: zod.coerce.date(),
+  borrowedDate: zod.string().date(),
+  deadline: zod.string().date(),
   notes: zod.string().optional(),
   isPaid: zod.boolean(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 export const ListLoansResponse = zod.array(ListLoansResponseItem);
 
@@ -344,8 +344,8 @@ export const ListLoansResponse = zod.array(ListLoansResponseItem);
 export const CreateLoanBody = zod.object({
   lenderName: zod.string(),
   amount: zod.number(),
-  borrowedDate: zod.coerce.date(),
-  deadline: zod.coerce.date(),
+  borrowedDate: zod.string().date(),
+  deadline: zod.string().date(),
   notes: zod.string().optional(),
 });
 
@@ -359,8 +359,8 @@ export const UpdateLoanParams = zod.object({
 export const UpdateLoanBody = zod.object({
   lenderName: zod.string(),
   amount: zod.number(),
-  borrowedDate: zod.coerce.date(),
-  deadline: zod.coerce.date(),
+  borrowedDate: zod.string().date(),
+  deadline: zod.string().date(),
   notes: zod.string().optional(),
   isPaid: zod.boolean(),
 });
@@ -369,11 +369,11 @@ export const UpdateLoanResponse = zod.object({
   id: zod.number(),
   lenderName: zod.string(),
   amount: zod.number(),
-  borrowedDate: zod.coerce.date(),
-  deadline: zod.coerce.date(),
+  borrowedDate: zod.string().date(),
+  deadline: zod.string().date(),
   notes: zod.string().optional(),
   isPaid: zod.boolean(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 
 /**
@@ -394,9 +394,9 @@ export const ListLoanPaymentsResponseItem = zod.object({
   id: zod.number(),
   loanId: zod.number(),
   amount: zod.number(),
-  paidDate: zod.coerce.date(),
+  paidDate: zod.string().date(),
   notes: zod.string().optional(),
-  createdAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
 });
 export const ListLoanPaymentsResponse = zod.array(ListLoanPaymentsResponseItem);
 
@@ -409,7 +409,7 @@ export const CreateLoanPaymentParams = zod.object({
 
 export const CreateLoanPaymentBody = zod.object({
   amount: zod.number(),
-  paidDate: zod.coerce.date(),
+  paidDate: zod.string().date(),
   notes: zod.string().optional(),
 });
 
@@ -428,8 +428,8 @@ export const ListNotesResponseItem = zod.object({
   id: zod.number(),
   title: zod.string(),
   content: zod.string(),
-  createdAt: zod.coerce.date(),
-  updatedAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
+  updatedAt: zod.string().datetime({}),
 });
 export const ListNotesResponse = zod.array(ListNotesResponseItem);
 
@@ -457,8 +457,8 @@ export const UpdateNoteResponse = zod.object({
   id: zod.number(),
   title: zod.string(),
   content: zod.string(),
-  createdAt: zod.coerce.date(),
-  updatedAt: zod.coerce.date(),
+  createdAt: zod.string().datetime({}),
+  updatedAt: zod.string().datetime({}),
 });
 
 /**

@@ -9,7 +9,7 @@
 export interface CreateLoanBody {
   lenderName: string;
   amount: number;
-  borrowedDate: Date;
-  deadline: Date;
+  borrowedDate: string;
+  deadline: string;
   notes?: string;
 }

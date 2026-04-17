@@ -10,6 +10,6 @@ export interface CreateSavingsGoalBody {
   name: string;
   targetAmount: number;
   currentAmount: number;
-  deadline?: Date;
+  deadline?: string;
   notes?: string;
 }

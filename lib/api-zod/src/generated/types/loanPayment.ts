@@ -10,7 +10,7 @@ export interface LoanPayment {
   id: number;
   loanId: number;
   amount: number;
-  paidDate: Date;
+  paidDate: string;
   notes?: string;
-  createdAt: Date;
+  createdAt: string;
 }

@@ -18,5 +18,5 @@ export interface BudgetPlan {
   spentAmount: number;
   remainingAmount: number;
   percentUsed: number;
-  createdAt: Date;
+  createdAt: string;
 }

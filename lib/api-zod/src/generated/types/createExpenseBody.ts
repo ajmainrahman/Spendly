@@ -9,7 +9,7 @@
 export interface CreateExpenseBody {
   description: string;
   amount: number;
-  date: Date;
+  date: string;
   categoryId: number;
   notes?: string;
 }

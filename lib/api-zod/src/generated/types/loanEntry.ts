@@ -10,9 +10,9 @@ export interface LoanEntry {
   id: number;
   lenderName: string;
   amount: number;
-  borrowedDate: Date;
-  deadline: Date;
+  borrowedDate: string;
+  deadline: string;
   notes?: string;
   isPaid: boolean;
-  createdAt: Date;
+  createdAt: string;
 }
