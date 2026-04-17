@@ -88,14 +88,14 @@ During the Vercel setup, add these environment variables:
 
 The `vercel.json` at the project root handles:
 - Building the React frontend (`artifacts/budget-tracker`)
-- Serving the Express API as a Vercel serverless function (`api/index.ts`)
-- Routing `/api/*` to the API function and everything else to the SPA
+- Serving the Express API as a Vercel serverless function (`api/[...path].mjs`)
+- Routing all non-API requests to the SPA entry (`index.html`)
 
 ## Project Structure
 
 ```
 ├── api/
-│   └── index.ts              # Vercel serverless function entry
+│   └── [...path].mjs         # Vercel serverless function entry (handles /api/*)
 ├── artifacts/
 │   ├── api-server/           # Express API server
 │   │   └── src/

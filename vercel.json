@@ -2,12 +2,11 @@
   "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/budget-tracker run build",
   "outputDirectory": "artifacts/budget-tracker/dist/public",
   "functions": {
-    "api/index.mjs": {
+    "api/[...path].mjs": {
       "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.mjs" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
