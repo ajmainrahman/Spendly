@@ -6,13 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface IncomeEntry {
+export interface Note {
   id: number;
-  source: string;
-  amount: number;
-  date: Date;
-  categoryId: number;
-  categoryName: string;
-  notes?: string;
+  title: string;
+  content: string;
   createdAt: Date;
+  updatedAt: Date;
 }

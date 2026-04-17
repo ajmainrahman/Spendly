@@ -15,6 +15,20 @@ export const loansTable = pgTable("loans", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const loanPaymentsTable = pgTable("loan_payments", {
+  id: serial("id").primaryKey(),
+  loanId: integer("loan_id").references(() => loansTable.id).notNull(),
+  userId: integer("user_id").references(() => usersTable.id),
+  amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+  paidDate: date("paid_date").notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const insertLoanSchema = createInsertSchema(loansTable).omit({ id: true, createdAt: true });
 export type InsertLoan = z.infer<typeof insertLoanSchema>;
 export type Loan = typeof loansTable.$inferSelect;
+
+export const insertLoanPaymentSchema = createInsertSchema(loanPaymentsTable).omit({ id: true, createdAt: true });
+export type InsertLoanPayment = z.infer<typeof insertLoanPaymentSchema>;
+export type LoanPayment = typeof loanPaymentsTable.$inferSelect;

@@ -6,10 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface CreateIncomeBody {
-  source: string;
-  amount: number;
-  date: Date;
-  categoryId: number;
-  notes?: string;
+export interface UpdateNoteBody {
+  title: string;
+  content: string;
 }

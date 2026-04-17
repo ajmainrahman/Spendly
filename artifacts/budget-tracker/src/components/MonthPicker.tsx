@@ -1,6 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getMonthLabel, prevMonth, nextMonth, getCurrentMonth } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { getMonthLabel, prevMonth, nextMonth } from "@/lib/utils";
 
 interface MonthPickerProps {
   month: string;
@@ -8,9 +7,6 @@ interface MonthPickerProps {
 }
 
 export default function MonthPicker({ month, onChange }: MonthPickerProps) {
-  const current = getCurrentMonth();
-  const isCurrentMonth = month === current;
-
   return (
     <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
       <button
@@ -25,11 +21,7 @@ export default function MonthPicker({ month, onChange }: MonthPickerProps) {
       </span>
       <button
         onClick={() => onChange(nextMonth(month))}
-        disabled={isCurrentMonth}
-        className={cn(
-          "p-1.5 rounded-md transition-colors",
-          isCurrentMonth ? "opacity-30 cursor-not-allowed" : "hover:bg-background"
-        )}
+        className="p-1.5 rounded-md transition-colors hover:bg-background"
         aria-label="Next month"
       >
         <ChevronRight className="w-4 h-4" />

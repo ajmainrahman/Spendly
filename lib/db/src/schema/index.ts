@@ -6,3 +6,4 @@ export * from "./budgets";
 export * from "./savings_goals";
 export * from "./password_reset_tokens";
 export * from "./loans";
+export * from "./notes";

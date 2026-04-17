@@ -11,6 +11,7 @@ import {
   Menu,
   LogOut,
   HandCoins,
+  NotebookPen,
 } from "lucide-react";
 import { useState } from "react";
 import spendlyLogo from "@/assets/spendly-logo.png";
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/budgets", label: "Budgets", icon: PiggyBank },
   { href: "/savings", label: "Savings", icon: Target },
   { href: "/loans", label: "Loans", icon: HandCoins },
+  { href: "/notepad", label: "Notepad", icon: NotebookPen },
   { href: "/categories", label: "Categories", icon: Tag },
   { href: "/reports", label: "Reports", icon: BarChart3 },
 ];

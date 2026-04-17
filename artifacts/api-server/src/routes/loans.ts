@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
-import { db, loansTable } from "@workspace/db";
+import { db, loansTable, loanPaymentsTable } from "@workspace/db";
 import {
   CreateLoanBody,
   UpdateLoanBody,
@@ -8,6 +8,10 @@ import {
   DeleteLoanParams,
   ListLoansResponse,
   UpdateLoanResponse,
+  CreateLoanPaymentBody,
+  ListLoanPaymentsParams,
+  CreateLoanPaymentParams,
+  DeleteLoanPaymentParams,
 } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -26,6 +30,21 @@ function mapLoan(loan: {
     ...loan,
     amount: parseFloat(loan.amount),
     notes: loan.notes ?? undefined,
+  };
+}
+
+function mapPayment(payment: {
+  id: number;
+  loanId: number;
+  amount: string;
+  paidDate: string;
+  notes: string | null;
+  createdAt: Date;
+}) {
+  return {
+    ...payment,
+    amount: parseFloat(payment.amount),
+    notes: payment.notes ?? undefined,
   };
 }
 
@@ -91,6 +110,93 @@ router.delete("/loans/:id", async (req, res): Promise<void> => {
     .returning();
   if (!deleted) {
     res.status(404).json({ error: "Loan not found" });
+    return;
+  }
+  res.sendStatus(204);
+});
+
+router.get("/loans/:id/payments", async (req, res): Promise<void> => {
+  const params = ListLoanPaymentsParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const loan = await db
+    .select()
+    .from(loansTable)
+    .where(and(eq(loansTable.id, params.data.id), eq(loansTable.userId, req.userId!)))
+    .limit(1);
+  if (!loan.length) {
+    res.status(404).json({ error: "Loan not found" });
+    return;
+  }
+  const payments = await db
+    .select()
+    .from(loanPaymentsTable)
+    .where(eq(loanPaymentsTable.loanId, params.data.id))
+    .orderBy(loanPaymentsTable.paidDate);
+  res.json(payments.map(mapPayment));
+});
+
+router.post("/loans/:id/payments", async (req, res): Promise<void> => {
+  const params = CreateLoanPaymentParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const loan = await db
+    .select()
+    .from(loansTable)
+    .where(and(eq(loansTable.id, params.data.id), eq(loansTable.userId, req.userId!)))
+    .limit(1);
+  if (!loan.length) {
+    res.status(404).json({ error: "Loan not found" });
+    return;
+  }
+  const parsed = CreateLoanPaymentBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [payment] = await db
+    .insert(loanPaymentsTable)
+    .values({
+      loanId: params.data.id,
+      userId: req.userId,
+      amount: String(parsed.data.amount),
+      paidDate: parsed.data.paidDate,
+      notes: parsed.data.notes,
+    })
+    .returning();
+  res.status(201).json(mapPayment(payment));
+});
+
+router.delete("/loans/:id/payments/:paymentId", async (req, res): Promise<void> => {
+  const params = DeleteLoanPaymentParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const loan = await db
+    .select()
+    .from(loansTable)
+    .where(and(eq(loansTable.id, params.data.id), eq(loansTable.userId, req.userId!)))
+    .limit(1);
+  if (!loan.length) {
+    res.status(404).json({ error: "Loan not found" });
+    return;
+  }
+  const [deleted] = await db
+    .delete(loanPaymentsTable)
+    .where(
+      and(
+        eq(loanPaymentsTable.id, params.data.paymentId),
+        eq(loanPaymentsTable.loanId, params.data.id),
+      )
+    )
+    .returning();
+  if (!deleted) {
+    res.status(404).json({ error: "Payment not found" });
     return;
   }
   res.sendStatus(204);

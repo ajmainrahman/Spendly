@@ -168,6 +168,67 @@ export interface BudgetVsActual {
   percentUsed: number;
 }
 
+export interface LoanEntry {
+  id: number;
+  lenderName: string;
+  amount: number;
+  borrowedDate: string;
+  deadline: string;
+  notes?: string;
+  isPaid: boolean;
+  createdAt: string;
+}
+
+export interface CreateLoanBody {
+  lenderName: string;
+  amount: number;
+  borrowedDate: string;
+  deadline: string;
+  notes?: string;
+}
+
+export interface UpdateLoanBody {
+  lenderName: string;
+  amount: number;
+  borrowedDate: string;
+  deadline: string;
+  notes?: string;
+  isPaid: boolean;
+}
+
+export interface LoanPayment {
+  id: number;
+  loanId: number;
+  amount: number;
+  paidDate: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface CreateLoanPaymentBody {
+  amount: number;
+  paidDate: string;
+  notes?: string;
+}
+
+export interface Note {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateNoteBody {
+  title: string;
+  content: string;
+}
+
+export interface UpdateNoteBody {
+  title: string;
+  content: string;
+}
+
 export type ListIncomeParams = {
   /**
    * Format: YYYY-MM
@@ -208,34 +269,6 @@ export type GetCategoryBreakdownParams = {
 export type GetMonthlyTrendParams = {
   months?: number;
 };
-
-export interface LoanEntry {
-  id: number;
-  lenderName: string;
-  amount: number;
-  borrowedDate: string;
-  deadline: string;
-  notes?: string;
-  isPaid: boolean;
-  createdAt: string;
-}
-
-export interface CreateLoanBody {
-  lenderName: string;
-  amount: number;
-  borrowedDate: string;
-  deadline: string;
-  notes?: string;
-}
-
-export interface UpdateLoanBody {
-  lenderName: string;
-  amount: number;
-  borrowedDate: string;
-  deadline: string;
-  notes?: string;
-  isPaid: boolean;
-}
 
 export type GetBudgetVsActualParams = {
   /**

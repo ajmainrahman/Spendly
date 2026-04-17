@@ -22,6 +22,10 @@ tags:
     description: Savings goals operations
   - name: dashboard
     description: Dashboard summary operations
+  - name: loans
+    description: Loan operations
+  - name: notes
+    description: Notepad operations
 paths:
   /healthz:
     get:
@@ -418,6 +422,210 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SavingsGoal"
+
+  /loans:
+    get:
+      operationId: listLoans
+      tags: [loans]
+      summary: List all loans
+      responses:
+        "200":
+          description: List of loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LoanEntry"
+    post:
+      operationId: createLoan
+      tags: [loans]
+      summary: Create a loan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLoanBody"
+      responses:
+        "201":
+          description: Created loan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanEntry"
+
+  /loans/{id}:
+    put:
+      operationId: updateLoan
+      tags: [loans]
+      summary: Update a loan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLoanBody"
+      responses:
+        "200":
+          description: Updated loan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanEntry"
+    delete:
+      operationId: deleteLoan
+      tags: [loans]
+      summary: Delete a loan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /loans/{id}/payments:
+    get:
+      operationId: listLoanPayments
+      tags: [loans]
+      summary: List partial payments for a loan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of partial payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LoanPayment"
+    post:
+      operationId: createLoanPayment
+      tags: [loans]
+      summary: Record a partial payment for a loan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLoanPaymentBody"
+      responses:
+        "201":
+          description: Created loan payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanPayment"
+
+  /loans/{id}/payments/{paymentId}:
+    delete:
+      operationId: deleteLoanPayment
+      tags: [loans]
+      summary: Delete a partial payment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /notes:
+    get:
+      operationId: listNotes
+      tags: [notes]
+      summary: List all notes
+      responses:
+        "200":
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+    post:
+      operationId: createNote
+      tags: [notes]
+      summary: Create a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNoteBody"
+      responses:
+        "201":
+          description: Created note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+
+  /notes/{id}:
+    put:
+      operationId: updateNote
+      tags: [notes]
+      summary: Update a note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNoteBody"
+      responses:
+        "200":
+          description: Updated note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+    delete:
+      operationId: deleteNote
+      tags: [notes]
+      summary: Delete a note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
 
   /dashboard/summary:
     get:
@@ -877,3 +1085,161 @@ components:
         - actual
         - variance
         - percentUsed
+
+    LoanEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        lenderName:
+          type: string
+        amount:
+          type: number
+        borrowedDate:
+          type: string
+          format: date
+        deadline:
+          type: string
+          format: date
+        notes:
+          type: string
+        isPaid:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - lenderName
+        - amount
+        - borrowedDate
+        - deadline
+        - isPaid
+        - createdAt
+
+    CreateLoanBody:
+      type: object
+      properties:
+        lenderName:
+          type: string
+        amount:
+          type: number
+        borrowedDate:
+          type: string
+          format: date
+        deadline:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - lenderName
+        - amount
+        - borrowedDate
+        - deadline
+
+    UpdateLoanBody:
+      type: object
+      properties:
+        lenderName:
+          type: string
+        amount:
+          type: number
+        borrowedDate:
+          type: string
+          format: date
+        deadline:
+          type: string
+          format: date
+        notes:
+          type: string
+        isPaid:
+          type: boolean
+      required:
+        - lenderName
+        - amount
+        - borrowedDate
+        - deadline
+        - isPaid
+
+    LoanPayment:
+      type: object
+      properties:
+        id:
+          type: integer
+        loanId:
+          type: integer
+        amount:
+          type: number
+        paidDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - loanId
+        - amount
+        - paidDate
+        - createdAt
+
+    CreateLoanPaymentBody:
+      type: object
+      properties:
+        amount:
+          type: number
+        paidDate:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - amount
+        - paidDate
+
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - content
+        - createdAt
+        - updatedAt
+
+    CreateNoteBody:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+      required:
+        - title
+        - content
+
+    UpdateNoteBody:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+      required:
+        - title
+        - content

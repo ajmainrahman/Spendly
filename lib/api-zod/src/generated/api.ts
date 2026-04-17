@@ -56,7 +56,7 @@ export const ListIncomeResponseItem = zod.object({
   id: zod.number(),
   source: zod.string(),
   amount: zod.number(),
-  date: zod.string(),
+  date: zod.coerce.date(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   notes: zod.string().optional(),
@@ -70,7 +70,7 @@ export const ListIncomeResponse = zod.array(ListIncomeResponseItem);
 export const CreateIncomeBody = zod.object({
   source: zod.string(),
   amount: zod.number(),
-  date: zod.string(),
+  date: zod.coerce.date(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -85,7 +85,7 @@ export const UpdateIncomeParams = zod.object({
 export const UpdateIncomeBody = zod.object({
   source: zod.string(),
   amount: zod.number(),
-  date: zod.string(),
+  date: zod.coerce.date(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -94,7 +94,7 @@ export const UpdateIncomeResponse = zod.object({
   id: zod.number(),
   source: zod.string(),
   amount: zod.number(),
-  date: zod.string(),
+  date: zod.coerce.date(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   notes: zod.string().optional(),
@@ -120,7 +120,7 @@ export const ListExpensesResponseItem = zod.object({
   id: zod.number(),
   description: zod.string(),
   amount: zod.number(),
-  date: zod.string(),
+  date: zod.coerce.date(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   categoryIcon: zod.string(),
@@ -136,7 +136,7 @@ export const ListExpensesResponse = zod.array(ListExpensesResponseItem);
 export const CreateExpenseBody = zod.object({
   description: zod.string(),
   amount: zod.number(),
-  date: zod.string(),
+  date: zod.coerce.date(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -151,7 +151,7 @@ export const UpdateExpenseParams = zod.object({
 export const UpdateExpenseBody = zod.object({
   description: zod.string(),
   amount: zod.number(),
-  date: zod.string(),
+  date: zod.coerce.date(),
   categoryId: zod.number(),
   notes: zod.string().optional(),
 });
@@ -160,7 +160,7 @@ export const UpdateExpenseResponse = zod.object({
   id: zod.number(),
   description: zod.string(),
   amount: zod.number(),
-  date: zod.string(),
+  date: zod.coerce.date(),
   categoryId: zod.number(),
   categoryName: zod.string(),
   categoryIcon: zod.string(),
@@ -324,29 +324,28 @@ export const AddSavingsContributionResponse = zod.object({
 });
 
 /**
- * @summary List loans
+ * @summary List all loans
  */
-export const ListLoansResponse = zod.array(
-  zod.object({
-    id: zod.number(),
-    lenderName: zod.string(),
-    amount: zod.number(),
-    borrowedDate: zod.string(),
-    deadline: zod.string(),
-    notes: zod.string().optional(),
-    isPaid: zod.boolean(),
-    createdAt: zod.coerce.date(),
-  }),
-);
+export const ListLoansResponseItem = zod.object({
+  id: zod.number(),
+  lenderName: zod.string(),
+  amount: zod.number(),
+  borrowedDate: zod.coerce.date(),
+  deadline: zod.coerce.date(),
+  notes: zod.string().optional(),
+  isPaid: zod.boolean(),
+  createdAt: zod.coerce.date(),
+});
+export const ListLoansResponse = zod.array(ListLoansResponseItem);
 
 /**
  * @summary Create a loan
  */
 export const CreateLoanBody = zod.object({
-  lenderName: zod.string().min(1),
-  amount: zod.number().positive(),
-  borrowedDate: zod.string(),
-  deadline: zod.string(),
+  lenderName: zod.string(),
+  amount: zod.number(),
+  borrowedDate: zod.coerce.date(),
+  deadline: zod.coerce.date(),
   notes: zod.string().optional(),
 });
 
@@ -358,10 +357,10 @@ export const UpdateLoanParams = zod.object({
 });
 
 export const UpdateLoanBody = zod.object({
-  lenderName: zod.string().min(1),
-  amount: zod.number().positive(),
-  borrowedDate: zod.string(),
-  deadline: zod.string(),
+  lenderName: zod.string(),
+  amount: zod.number(),
+  borrowedDate: zod.coerce.date(),
+  deadline: zod.coerce.date(),
   notes: zod.string().optional(),
   isPaid: zod.boolean(),
 });
@@ -370,8 +369,8 @@ export const UpdateLoanResponse = zod.object({
   id: zod.number(),
   lenderName: zod.string(),
   amount: zod.number(),
-  borrowedDate: zod.string(),
-  deadline: zod.string(),
+  borrowedDate: zod.coerce.date(),
+  deadline: zod.coerce.date(),
   notes: zod.string().optional(),
   isPaid: zod.boolean(),
   createdAt: zod.coerce.date(),
@@ -381,6 +380,91 @@ export const UpdateLoanResponse = zod.object({
  * @summary Delete a loan
  */
 export const DeleteLoanParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+/**
+ * @summary List partial payments for a loan
+ */
+export const ListLoanPaymentsParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const ListLoanPaymentsResponseItem = zod.object({
+  id: zod.number(),
+  loanId: zod.number(),
+  amount: zod.number(),
+  paidDate: zod.coerce.date(),
+  notes: zod.string().optional(),
+  createdAt: zod.coerce.date(),
+});
+export const ListLoanPaymentsResponse = zod.array(ListLoanPaymentsResponseItem);
+
+/**
+ * @summary Record a partial payment for a loan
+ */
+export const CreateLoanPaymentParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const CreateLoanPaymentBody = zod.object({
+  amount: zod.number(),
+  paidDate: zod.coerce.date(),
+  notes: zod.string().optional(),
+});
+
+/**
+ * @summary Delete a partial payment
+ */
+export const DeleteLoanPaymentParams = zod.object({
+  id: zod.coerce.number(),
+  paymentId: zod.coerce.number(),
+});
+
+/**
+ * @summary List all notes
+ */
+export const ListNotesResponseItem = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  content: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const ListNotesResponse = zod.array(ListNotesResponseItem);
+
+/**
+ * @summary Create a note
+ */
+export const CreateNoteBody = zod.object({
+  title: zod.string(),
+  content: zod.string(),
+});
+
+/**
+ * @summary Update a note
+ */
+export const UpdateNoteParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateNoteBody = zod.object({
+  title: zod.string(),
+  content: zod.string(),
+});
+
+export const UpdateNoteResponse = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  content: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Delete a note
+ */
+export const DeleteNoteParams = zod.object({
   id: zod.coerce.number(),
 });
 

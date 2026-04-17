@@ -6,10 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface CreateExpenseBody {
-  description: string;
+export interface LoanPayment {
+  id: number;
+  loanId: number;
   amount: number;
-  date: Date;
-  categoryId: number;
+  paidDate: Date;
   notes?: string;
+  createdAt: Date;
 }

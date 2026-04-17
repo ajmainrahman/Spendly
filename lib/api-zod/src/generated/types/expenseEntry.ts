@@ -10,7 +10,7 @@ export interface ExpenseEntry {
   id: number;
   description: string;
   amount: number;
-  date: string;
+  date: Date;
   categoryId: number;
   categoryName: string;
   categoryIcon: string;

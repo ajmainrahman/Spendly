@@ -13,6 +13,7 @@ import Categories from "@/pages/Categories";
 import Reports from "@/pages/Reports";
 import Auth from "@/pages/Auth";
 import Loans from "@/pages/Loans";
+import Notepad from "@/pages/Notepad";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,6 +52,7 @@ function AppRoutes() {
           <Route path="/budgets" component={Budgets} />
           <Route path="/savings" component={Savings} />
           <Route path="/loans" component={Loans} />
+          <Route path="/notepad" component={Notepad} />
           <Route path="/categories" component={Categories} />
           <Route path="/reports" component={Reports} />
         </Switch>
