@@ -38,5 +38,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+// Vercel catch-all API functions can forward requests with the `/api` prefix
+// already stripped (e.g. `/auth/login`). Mounting the same router at root
+// keeps auth and API routes reachable in both environments.
+app.use(router);
 
 export default app;
